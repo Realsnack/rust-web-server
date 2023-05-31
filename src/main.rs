@@ -3,6 +3,8 @@ use tokio::{
     net::TcpListener,
 };
 
+pub mod route_handler;
+
 #[tokio::main]
 async fn main() -> tokio::io::Result<()> {
     let listener = TcpListener::bind("0.0.0.0:6920").await?;
@@ -37,28 +39,9 @@ async fn main() -> tokio::io::Result<()> {
 
             let first_line = lines.next().unwrap();
 
-            // Match the first word of the first line
-            let status_code = match first_line.split(" ").next().unwrap() {
-                "GET" => {
-                    // Get the second word of the first line
-                    let path = first_line.split(" ").nth(1).unwrap();
-                    println!("GET request path: {}", path);
-                    "200 OK"
-                }
-                "POST" => {
-                    // Get the second word of the first line
-                    let path = first_line.split(" ").nth(1).unwrap();
-                    println!("POST Request path: {}", path);
-                    "200 OK"
-                }
-                _ => {
-                    println!("Invalid request");
-                    "500 Internal Server Error"
-                }
-            };
+            let request_path = first_line.split(" ").nth(1).unwrap();
 
-            // Create response
-            let response = format!("HTTP/1.1 {}\r\n\r\n", status_code);
+            let response = route_handler::handle_route(request_path);
 
             // Write response to buffer
             buf[..response.len()].copy_from_slice(response.as_bytes());
