@@ -32,16 +32,14 @@ async fn main() -> tokio::io::Result<()> {
                 Ok(v) => v,
                 Err(e) => panic!("Invalid UTF-8 sequence: {}", e),
             };
-            println!("read {} bytes: {}", n, s);
 
             // Split string by newline
-            let mut lines = s.split("\n");
+            let mut request_lines = s.split("\n");
 
-            let first_line = lines.next().unwrap();
-
+            let first_line = request_lines.next().unwrap();
             let request_path = first_line.split(" ").nth(1).unwrap();
 
-            let response = route_handler::handle_route(request_path);
+            let response = route_handler::handle_route(request_path, request_lines);
 
             // Write response to buffer
             buf[..response.len()].copy_from_slice(response.as_bytes());
