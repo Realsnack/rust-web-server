@@ -1,3 +1,5 @@
+[![build and test](https://github.com/Realsnack/rust-web-server/actions/workflows/rust.yaml/badge.svg?branch=main)](https://github.com/Realsnack/rust-web-server/actions/workflows/rust.yaml)
+
 # Simple Web Server in Rust
 
 ## Overview
