@@ -34,9 +34,9 @@ async fn main() -> tokio::io::Result<()> {
             };
 
             // Split string by newline
-            let mut request_lines = s.split("\n");
+            let request_lines = s.split("\n");
 
-            let first_line = request_lines.next().unwrap();
+            let first_line = request_lines.clone().next().unwrap();
             let request_path = first_line.split(" ").nth(1).unwrap();
 
             let response = route_handler::handle_route(request_path, request_lines);
