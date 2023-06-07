@@ -3,6 +3,7 @@ use tokio::{
     net::TcpListener,
 };
 
+pub mod method;
 pub mod route_handler;
 
 #[tokio::main]

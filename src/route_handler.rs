@@ -1,11 +1,25 @@
 use std::str::Split;
 
+use crate::method;
+
 pub fn handle_route(request_path: &str, request: Split<&str>) -> String {
     // convert request to vector
     let request: Vec<&str> = request.collect();
     println!("Request: {:?}", request[0]);
+    let method_str = request[0];
+    let method = match method_str {
+        "GET" => method::Method::GET,
+        "POST" => method::Method::POST,
+        "PUT" => method::Method::PUT,
+        "DELETE" => method::Method::DELETE,
+        "HEAD" => method::Method::HEAD,
+        "CONNECT" => method::Method::CONNECT,
+        "OPTIONS" => method::Method::OPTIONS,
+        "TRACE" => method::Method::TRACE,
+        _ => method::Method::GET,
+    };
 
-    if !request[0].starts_with("GET"){
+    if method != method::Method::GET {
         return format!("HTTP/1.1 {} Method Not Found\r\n\r\n<!DOCTYPE html><html lang=\"en\"><head>    <meta charset=\"UTF-8\">    <meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\">    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">    <title>Method Not Allowed</title></head><body>    <h1>Method Not Allowed</h1>    <p>The method specified in the request is not allowed for the resource identified by the request URI.</p></body></html>", 405);
     }
 
