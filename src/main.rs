@@ -5,6 +5,7 @@ use tokio::{
 
 pub mod method;
 pub mod route_handler;
+mod http_request;
 
 #[tokio::main]
 async fn main() -> tokio::io::Result<()> {
