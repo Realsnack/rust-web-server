@@ -10,12 +10,7 @@ pub struct HttpRequest {
     pub body: Option<String>,
 }
 
-pub fn parse_request_from_buffer(buffer: Vec<u8>) -> Result<HttpRequest, String> {
-    let request = match std::str::from_utf8(&buffer) {
-        Ok(v) => v,
-        Err(e) => return Err(format!("Invalid UTF-8 sequence: {}", e)),
-    };
-
+pub fn parse_request(request: &str) -> Result<HttpRequest, String> {
     let request_lines = request.split("\n");
 
     // Should look like this:
@@ -37,20 +32,29 @@ pub fn parse_request_from_buffer(buffer: Vec<u8>) -> Result<HttpRequest, String>
         let key = header.next().unwrap();
         let value = header.next().unwrap();
 
-        headers.insert(key.to_string(), value.to_string());
+        headers.insert(key.to_string(), value.trim().to_string());
     }
     
     let header_count = headers.len();
+    let mut body = String::new();
 
-    let body = request_lines.clone().skip(header_count + 1);
-    let body = body.collect::<Vec<&str>>().join("\n");
+    for line in request_lines.clone().skip(2+header_count) {
+        if line == "\r" {
+            break;
+        }
+
+        body.push_str(line);
+    }
 
     return Ok(HttpRequest {
         method: method.to_string(),
         path: path.to_string(),
         query_string: query_string.map(|s| s.to_string()),
         protocol: protocol.to_string(),
-        headers: headers,
-        body: body.to_string().into(),
+        headers,
+        body: match body.len() {
+            0 => None,
+            _ => Some(body),
+        }
     });
 }
