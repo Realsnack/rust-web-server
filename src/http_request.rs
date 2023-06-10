@@ -18,8 +18,8 @@ pub fn parse_request(request: &str) -> Result<HttpRequest, String> {
     let first_line = request_lines.clone().next().unwrap();
 
     let method = first_line.split(" ").nth(0).unwrap();
-    let path = first_line.split(" ").nth(1).unwrap();
-    let query_string = path.split("?").nth(1);
+    let path = first_line.split(" ").nth(1).unwrap().split("?").nth(0).unwrap();
+    let query_string = first_line.split("?").nth(1).map(|s| s.split(" ").nth(0).unwrap().to_string());
     let protocol = first_line.split(" ").nth(2).unwrap();
 
     let mut headers: HashMap<String, String> = HashMap::new();
