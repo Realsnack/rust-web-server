@@ -3,9 +3,9 @@ use tokio::{
     net::TcpListener,
 };
 
-pub mod method;
-pub mod route_handler;
+pub mod http_method;
 mod http_request;
+pub mod route_handler;
 
 #[tokio::main]
 async fn main() -> tokio::io::Result<()> {
@@ -27,12 +27,12 @@ async fn main() -> tokio::io::Result<()> {
                     return;
                 }
             };
-            
+
             let response = handle_request(buf, size);
-            
+
             // Write response to buffer
             buf[..response.len()].copy_from_slice(response.as_bytes());
-            
+
             if let Err(e) = socket.write_all(&buf[..response.len()]).await {
                 println!("failed to write to socket; err = {:?}", e);
                 return;
@@ -48,10 +48,10 @@ fn handle_request(request_buffer: [u8; 1024], request_size: usize) -> String {
         Err(e) => panic!("Invalid UTF-8 sequence: {}", e),
     };
 
-    // Parse request
-    let request = http_request::parse_request(string_request).unwrap();
-    println!("{:?}", request);
-    
-    // Generate response
-    String::from("HTTP/1.1 200 OK\r\n\r\n")
+    let request = match http_request::parse_request(string_request) {
+        Ok(request) => request,
+        Err(e) => return format!("HTTP/1.1 {} Bad Request\r\n\r\n{}", 400, e),
+    };
+
+    route_handler::handle_route(request)
 }
