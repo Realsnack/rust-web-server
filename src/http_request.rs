@@ -15,7 +15,6 @@ pub struct HttpRequest {
 pub fn parse_request(request: &str) -> Result<HttpRequest, String> {
     let request_lines = request.split("\n");
 
-    // Should look like this:
     // GET /index.html?name=foo HTTP/1.1
     let first_line = request_lines.clone().next().unwrap();
 
