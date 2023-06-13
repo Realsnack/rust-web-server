@@ -28,7 +28,7 @@ async fn main() -> tokio::io::Result<()> {
                 }
             };
 
-            let response = handle_request(buf, size);
+            let response = handle_request(buf, size).await;
 
             // Write response to buffer
             buf[..response.len()].copy_from_slice(response.as_bytes());
@@ -41,17 +41,17 @@ async fn main() -> tokio::io::Result<()> {
     }
 }
 
-fn handle_request(request_buffer: [u8; 1024], request_size: usize) -> String {
+async fn handle_request(request_buffer: [u8; 1024], request_size: usize) -> String {
     // convert bytes to str
     let string_request = match std::str::from_utf8(&request_buffer[0..request_size]) {
         Ok(v) => v,
         Err(e) => panic!("Invalid UTF-8 sequence: {}", e),
     };
 
-    let request = match http_request::parse_request(string_request) {
+    let request = match http_request::parse_request(string_request).await {
         Ok(request) => request,
         Err(e) => return format!("HTTP/1.1 {} Bad Request\r\n\r\n{}", 400, e),
     };
 
-    route_handler::handle_route(request)
+    route_handler::handle_route(request).await
 }

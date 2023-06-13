@@ -12,7 +12,7 @@ pub struct HttpRequest {
     pub body: Option<String>,
 }
 
-pub fn parse_request(request: &str) -> Result<HttpRequest, String> {
+pub async fn parse_request(request: &str) -> Result<HttpRequest, String> {
     let request_lines = request.split("\n");
 
     // GET /index.html?name=foo HTTP/1.1
