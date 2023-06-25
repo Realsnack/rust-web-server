@@ -1,7 +1,8 @@
 import http from 'k6/http';
 import { sleep } from 'k6';
 
-let max_vu = 10000;
+let max_vu = `${__ENV.MAX_VU}`;
+let url = `${__ENV.URL}`;
 
 export let options = {
     stages: [
@@ -18,6 +19,6 @@ export let options = {
 };
 
 export default function () {
-    http.get('http://localhost:6920');
+    http.get(url);
     sleep(1);
 }
